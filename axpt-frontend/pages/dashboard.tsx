@@ -3,22 +3,22 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getTransactionHistory } from '../services/transactions';
 import Card from '../components/Card';
-import { useAuth } from '../hooks/useAuth';
 
 export default function Dashboard() {
+  // Mocked User for Development
+  const user = {
+    id: '1',
+    email: 'test@example.com',
+    name: 'Test User'
+  };
+
   const router = useRouter();
-  const { user, logout } = useAuth(); // Access user context
   const [transactions, setTransactions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        if (!user) {
-          console.error('User is not authenticated');
-          return;
-        }
-
-        const userId = user.id; // Use user ID from AuthContext
+        const userId = user.id; // Use user ID from mocked user
         const history = await getTransactionHistory(userId);
         setTransactions(history);
       } catch (error) {
@@ -30,7 +30,6 @@ export default function Dashboard() {
   }, [user]);
 
   const handleLogout = () => {
-    logout();
     router.push('/ic-connect'); // Redirect user to login page after logout
   };
 
