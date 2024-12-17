@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from '../services/axios'; // Centralized Axios instance
-import { useAuth } from '../hooks/useAuth';
 
 interface Asset {
   id: string; // Added to uniquely identify each asset
@@ -11,23 +10,21 @@ interface Asset {
 }
 
 export default function Vault() {
-  const { user } = useAuth(); // Use user instead of identity to access the user object
+  // Mocked User for Development
+  const user = {
+    id: '1',
+    email: 'test@example.com',
+    name: 'Test User'
+  };
+
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return; // Wait until the user is available
-
     const fetchAssets = async () => {
       try {
-        const token = localStorage.getItem('auth-token'); // Use localStorage token
-        if (!token) {
-          setErrorMessage('You must be logged in to access your vault.');
-          setIsLoading(false);
-          return;
-        }
-
+        const token = 'mock-token'; // Mocked token for development
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         const response = await axios.get(`${apiUrl}/api/vault`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -43,10 +40,9 @@ export default function Vault() {
     };
 
     fetchAssets();
-  }, [user]);
+  }, []);
 
   if (isLoading) return <p>Loading your vault...</p>;
-  if (!user) return <p>Please log in to access your vault.</p>;
 
   return (
     <div className="p-10">
